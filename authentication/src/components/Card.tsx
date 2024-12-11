@@ -14,6 +14,8 @@ interface Employee {
 
 const Card = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -27,6 +29,10 @@ const Card = () => {
     fetchEmployees();
   }, []);
 
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery, employees]);
+
   const fetchEmployees = async () => {
     try {
       const response = await axios.get("http://localhost:5000/employees", {
@@ -35,10 +41,24 @@ const Card = () => {
         },
       });
       setEmployees(response.data);
+      setFilteredEmployees(response.data);
     } catch (error) {
       console.error("Error fetching employees:", error);
       toast.error("Error fetching employees!");
     }
+  };
+
+  const handleSearch = () => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    const filtered = employees.filter(
+      (employee) =>
+        employee.EName.toLowerCase().includes(lowerCaseQuery) ||
+        employee.Age.toString().includes(lowerCaseQuery) ||
+        employee.Address.toLowerCase().includes(lowerCaseQuery) ||
+        employee.Position.toLowerCase().includes(lowerCaseQuery)
+    );
+    setFilteredEmployees(filtered);
+    setCurrentPage(1); // Reset to first page after search
   };
 
   const openDeleteModal = (id: string) => {
@@ -106,8 +126,8 @@ const Card = () => {
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const currentEmployees = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
 
   const getVisiblePages = () => {
     let start = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -140,6 +160,17 @@ const Card = () => {
         pauseOnHover
       />
 
+      {/* Search Input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by name, age, address, or position"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2 border rounded-md"
+        />
+      </div>
+
       {/* Table for Employees */}
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto bg-white shadow-lg rounded-lg">
@@ -163,10 +194,10 @@ const Card = () => {
                     alt="avatar"
                   />
                 </td>
-                <td className="px-6 py-3">{employee.EName}</td>
-                <td className="px-6 py-3">{employee.Position}</td>
+                <td className="px-6 py-3 break-words max-w-xs">{employee.EName}</td>
+                <td className="px-6 py-3 break-words max-w-xs">{employee.Position}</td>
                 <td className="px-6 py-3">{employee.Age}</td>
-                <td className="px-6 py-3">{employee.Address}</td>
+                <td className="px-6 py-3 break-words max-w-xs">{employee.Address}</td>
                 <td className="px-6 py-3 text-center">
                   <button
                     className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md mr-2"
@@ -335,7 +366,7 @@ const Card = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal test*/}
+      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-6 bg-white rounded-lg w-full max-w-md">
