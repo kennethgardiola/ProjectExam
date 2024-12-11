@@ -21,7 +21,7 @@ const Card = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteEmployeeId, setDeleteEmployeeId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
   const maxVisiblePages = 7;
   const token = localStorage.getItem("token");
 
