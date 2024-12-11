@@ -9,7 +9,7 @@ import {useLocation} from "react-router-dom"
 // import character from "../assets/character.gif"
 
 const Home = () => {
-  // const [showMessage, setShowMessage] = useState(false);
+  // const [showMessage, setShowMessage] = useState(false); test
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const location = useLocation();
