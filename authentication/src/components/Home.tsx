@@ -1,15 +1,15 @@
 // import React, { useState } from "react";
-// import gift from "../assets/gift.gif";
+
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import {useLocation} from "react-router-dom"
-// import character from "../assets/character.gif"
+
 
 const Home = () => {
-  // const [showMessage, setShowMessage] = useState(false); test
+  
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const location = useLocation();
